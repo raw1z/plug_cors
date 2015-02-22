@@ -62,6 +62,7 @@ defmodule PlugCors do
         Logger.warn "[CORS] Preflight request detected"
         PlugCors.Preflight.call(conn, config)
       _ ->
+        Logger.warn "[CORS] Actual request detected"
         PlugCors.Actual.call(conn, config)
     end
   end
