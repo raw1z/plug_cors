@@ -1,5 +1,6 @@
 defmodule PlugCors.Preflight do
   import Plug.Conn
+  use PlugCors.Logger
   @moduledoc false
 
   def default_accept_headers do [
@@ -15,8 +16,10 @@ defmodule PlugCors.Preflight do
     origin = get_req_header(conn, "origin")
     case is_invalid_origin?(origin, config[:origins]) do
       true ->
+        Logger.warn "[CORS] invalid origin: #{origin}"
         send_unauthorized(conn)
       _ ->
+        Logger.warn "[CORS] valid origin: #{origin}"
         conn
         |> get_request_method
         |> check_request_method(config)
@@ -48,8 +51,10 @@ defmodule PlugCors.Preflight do
   defp check_request_method({ conn, method }, config) do
     case are_all_allowed?([method], config[:methods]) do
       false ->
+        Logger.warn "[CORS] request method not allowed"
         send_unauthorized(conn)
       _ ->
+        Logger.warn "[CORS] request method allowed"
         conn
         |> get_request_headers
         |> check_access_control_headers(config)

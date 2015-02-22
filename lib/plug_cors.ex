@@ -1,5 +1,7 @@
 defmodule PlugCors do
   import Plug.Conn
+  require Logger
+
   @moduledoc """
     A CORS Plug
 
@@ -57,6 +59,7 @@ defmodule PlugCors do
   defp handle_request(_, conn, config) do
     case is_preflight_request?(conn) do
       true ->
+        Logger.warn "[CORS] Preflight request detected"
         PlugCors.Preflight.call(conn, config)
       _ ->
         PlugCors.Actual.call(conn, config)
@@ -64,6 +67,8 @@ defmodule PlugCors do
   end
 
   defp is_preflight_request?(conn) do
+    Logger.warn "[CORS] method: #{conn.method}"
+    Logger.warn "[CORS] access-control-request-method: #{get_req_header(conn, "access-control-request-method")}"
     get_req_header(conn, "access-control-request-method") != [] and conn.method == "OPTIONS"
   end
 end
