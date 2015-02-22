@@ -1,6 +1,6 @@
 defmodule PlugCors.Preflight do
   import Plug.Conn
-  use PlugCors.Logger
+  require Logger
   @moduledoc false
 
   def default_accept_headers do [
