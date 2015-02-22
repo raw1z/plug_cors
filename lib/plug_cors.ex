@@ -48,6 +48,7 @@ defmodule PlugCors do
   end
 
   def call(conn, config) do
+    Logger.warn "[CORS] request headers: #{inspect(conn.req_headers)}"
     get_req_header(conn, "origin")
     |> handle_request(conn, config)
   end
