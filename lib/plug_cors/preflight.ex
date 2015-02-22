@@ -33,9 +33,9 @@ defmodule PlugCors.Preflight do
 
   defp is_origin_allowed?(origin_to_test, allowed_origin) do
     case allowed_origin do
-      "*." <> domain -> 
+      "*." <> domain ->
         String.contains?(origin_to_test, domain)
-      _ -> 
+      _ ->
         String.contains?(origin_to_test, allowed_origin)
     end
   end
@@ -47,13 +47,13 @@ defmodule PlugCors.Preflight do
 
   defp check_request_method({ conn, method }, config) do
     case are_all_allowed?([method], config[:methods]) do
-      false -> 
-        send_unauthorized(conn) 
+      false ->
+        send_unauthorized(conn)
       _ ->
         conn
-        |> get_request_headers      
+        |> get_request_headers
         |> check_access_control_headers(config)
-    end 
+    end
   end
 
   defp get_request_headers(conn) do
@@ -62,16 +62,16 @@ defmodule PlugCors.Preflight do
   end
 
   defp check_access_control_headers({conn, []}, config) do
-    send_ok(conn, config) 
+    send_ok(conn, config)
   end
 
   defp check_access_control_headers({ conn, headers }, config) do
     headers = hd(headers) |> String.split(",") |> Enum.map(fn(x) -> String.strip(x) end)
     case are_all_allowed?(headers, config[:headers] ++ default_accept_headers ) do
-      true ->  
+      true ->
         send_ok(conn, config)
       _ ->
-        send_unauthorized(conn) 
+        send_unauthorized(conn)
     end
   end
 
@@ -95,9 +95,9 @@ defmodule PlugCors.Preflight do
   defp send_ok(conn, config) do
     origin = if config[:origins] == "*", do: "*", else: hd(get_req_header(conn, "origin"))
 
-    conn = conn     
+    conn = conn
     |> put_resp_header("access-control-allow-origin", origin)
-    |> put_resp_header("access-control-allow-methods", Enum.join(config[:methods], ",")) 
+    |> put_resp_header("access-control-allow-methods", Enum.join(config[:methods], ","))
     |> put_access_control_allow_headers(config[:headers])
 
     if config[:max_age] > 0 do
@@ -112,7 +112,7 @@ defmodule PlugCors.Preflight do
       conn = put_resp_header(conn, "access-control-expose-headers", Enum.join(config[:expose_headers], ","))
     end
     conn |> send_resp( 200, "") |> halt
-    
+
   end
 
   defp send_unauthorized(conn) do

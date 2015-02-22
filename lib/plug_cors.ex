@@ -8,11 +8,11 @@ defmodule PlugCors do
 
     You can now also define the parameters inside of your elixir config instead if you wish. Parameters defined directly on the plug take precedence over the ones in config
 
-      config :plug_cors, 
-        origins: ["test.origin.test", "*.domain.com"], 
-        methods: ["GET", "POST"], 
+      config :plug_cors,
+        origins: ["test.origin.test", "*.domain.com"],
+        methods: ["GET", "POST"],
         headers: ["Authorization"]
-        
+
 
     Parameters:
 
@@ -29,8 +29,8 @@ defmodule PlugCors do
     * supports_credentials: Whether or not to allow cookies with requests "Access-Control-Allow-Credentials" header. Default: false (Will not output header)
 
   """
-  
-  def init(opts) do 
+
+  def init(opts) do
     [
       origins: get_config_env(:origins, opts, "*"),
       methods: get_config_env(:methods, opts, ["GET", "HEAD", "POST", "OPTIONS", "PUT", "PATCH", "DELETE"]),
@@ -46,7 +46,7 @@ defmodule PlugCors do
   end
 
   def call(conn, config) do
-    get_req_header(conn, "origin") 
+    get_req_header(conn, "origin")
     |> handle_request(conn, config)
   end
 
